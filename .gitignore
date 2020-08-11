@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+doc/
+/magic
+magic.so
+magic.dylib
+magic.dll
+magic.a
+magic.lib
+magic-test-*
+*.exe
+*.o
+*.obj
+*.lst

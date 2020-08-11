@@ -1,0 +1,12 @@
+{
+	"name": "magic",
+	"description": "Various math utilities.",
+	
+	"license": "MIT",
+	"authors": [
+		"k2aj"
+	],
+	"copyright": "Copyright © 2020, k2aj",
+	
+	"targetType": "library"
+}
