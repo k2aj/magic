@@ -322,6 +322,8 @@ alias dvec(size_t length) = Vector!(double,length);
 alias rvec(size_t length) = Vector!(real,length);
 alias ivec(size_t length) = Vector!(int,length);
 alias uvec(size_t length) = Vector!(uint,length);
+alias usvec(size_t length) = Vector!(ushort,length);
+alias ubvec(size_t length) = Vector!(ubyte,length);
 
 alias vec2 = vec!2;
 alias vec3 = vec!3;
@@ -342,6 +344,14 @@ alias ivec4 = ivec!4;
 alias uvec2 = uvec!2;
 alias uvec3 = uvec!3;
 alias uvec4 = uvec!4;
+
+alias ubvec2 = ubvec!2;
+alias ubvec3 = ubvec!3;
+alias ubvec4 = ubvec!4;
+
+alias usvec2 = usvec!2;
+alias usvec3 = usvec!3;
+alias usvec4 = usvec!4;
 
 private:
 //Creates mixin string for function call `op(args[0][i], args[1][i], args[2][i], ...)`
