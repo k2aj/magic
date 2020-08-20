@@ -1,5 +1,6 @@
 module magic.vector;
 
+import std.math : approxEqual, PI;
 import std.range;
 import std.algorithm;
 import std.format : format;
@@ -18,8 +19,10 @@ unittest {
 	assert(v.z == v.b && v.b == v[2]);
 	assert(v.w == v.a && v.a == v[3]);
 	
-	//Vector factory function
+	//Vector factory functions
 	assert(vector(1,2,3,4,5) == [1,2,3,4,5]);
+	assert(vec2.polar(PI/4).cwise!approxEqual(vec2(1,1).normalize)[].all);
+	assert(vec2.polar(0,1337).cwise!approxEqual(vec2(1337,0))[].all);
 	
 	//Expand operation
 	assert([v.e, v.e, v.e] == iota(1,5).cycle.take(12).array);
@@ -172,6 +175,20 @@ pure nothrow @safe @nogc struct Vector(T,size_t _length)
 	this(T[length] components...){array = components;}
 	/// Creates a `Vector` with all components set to given value.
 	this(T filler){array[] = filler;}
+	
+	static if(length == 2 && isFloatingPoint!T)
+	{
+		/** Params:
+				angle = Angle between the created `Vector` and unit vector [1,0], in radians.
+				norm = 
+			Returns: 2D `Vector` constructed from polar coordinates.
+		*/
+		static Vector polar(T angle, T norm=1) {
+			import std.math : sin,cos;
+			return Vector(cos(angle)*norm, sin(angle)*norm);
+		}
+	}
+	
 	/// Sets all components to values from given static array.
 	void opAssign(T[length] components){array = components;}
 	/// Sets all components to given value.
