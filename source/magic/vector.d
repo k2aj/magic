@@ -1,6 +1,6 @@
 module magic.vector;
 
-import std.math : approxEqual, PI;
+import std.math : approxEqual, PI, sqrt;
 import std.range;
 import std.algorithm;
 import std.format : format;
@@ -92,6 +92,8 @@ unittest {
 
 	//normalize(v) makes the norm 1, while preserving the ratio between vector components
 	assert(vec2(3,4).normalize.cwise!approxEqual(vec2(0.6f,0.8f))[].all);
+	assert(vec2(3,4).normalizeOrZero.cwise!approxEqual(vec2(3,4).normalize)[].all);
+	assert(vec2(0).normalizeOrZero == vec2(0));
 
 	//scaleTo(v,n) works like normalize, except it makes the norm equal to n
 	assert(vec2(3,4).scaleTo(3).cwise!approxEqual(vec2(1.8f, 2.4f))[].all);
@@ -278,14 +280,12 @@ Vector!(T,3) cross(T)(auto ref const T[3] v, auto ref const T[3] u) pure nothrow
 T norm(T,size_t length)(auto ref const T[length] v) pure nothrow @safe @nogc 
 if(isFloatingPoint!T) 
 {
-	import std.math : sqrt;
 	return sqrt(dot(v,v));
 }
 /// Returns: 2-norm (also known as length/magnitude) of given vector.
 double norm(T,size_t length)(auto ref const T[length] v) pure nothrow @safe @nogc 
 if(isIntegral!T) 
 {
-	import std.math : sqrt;
 	return sqrt(cast(double) dot(v,v));
 }
 /// Returns: `Vector` with the same direction as `v`, but norm equal to 1.
@@ -294,6 +294,21 @@ if(isFloatingPoint!T) in(norm(v) != 0)
 {
 	return 1/norm(v) * vector(v);
 }
+/// Returns: `normalize(v)` if `v` has non-zero norm, otherwise returns a vector with all components set to 0
+auto normalizeOrZero(T,size_t size)(auto ref const T[size] v)
+{
+	const norm2 = dot(v,v);
+	static if(isFloatingPoint!T) return norm2.approxEqual(0) ? Vector!(T,size)(0) : 1/sqrt(norm2) * vector(v);
+	else return norm2 == 0 ? Vector!(double,size)(0) : 1/sqrt(cast(double) norm2) * vector(v);
+}
+/// Returns: `normalize(v)` if `v` has non-zero norm, otherwise returns a vector with x=1 and all other components set to 0
+auto normalizeOrUnitX(T,size_t size)(auto ref const T[size] v)
+{
+	const norm2 = dot(v,v);
+	static if(isFloatingPoint!T) return norm2.approxEqual(0) ? Vector!(T,size)(1,Repeat!(size-1,0)) : 1/sqrt(norm2) * vector(v);
+	else return norm2 == 0 ? Vector!(double,size)(1,Repeat!(size-1,0)) : 1/sqrt(cast(double) norm2) * vector(v);
+}
+
 /// Returns: `Vector` with the same direction as `v`, but norm equal to `targetNorm`.
 auto scaleTo(T,size_t size)(auto ref const T[size] v, T targetNorm) pure nothrow @safe @nogc 
 if(isFloatingPoint!T) 
